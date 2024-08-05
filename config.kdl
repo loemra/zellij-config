@@ -1,0 +1,54 @@
+plugins {
+    // Define the "autolock" plugin.
+    autolock location="file:~/.config/zellij/plugins/zellij-autolock.wasm" {
+        triggers "nvim|vim|meli"  // Lock when any open these programs open. They are expected to unlock themselves when closed (e.g., using zellij.vim plugin).
+        watch_interval "1.0"  // When monitoring, check every X seconds.
+    }
+}
+keybinds {
+	normal {
+        bind "Enter" {  // Intercept `Enter`.
+            WriteChars "\u{000D}";  // Passthru `Enter`.
+            MessagePlugin "autolock" {};  // Activate the autolock plugin.
+        }
+	}
+    resize {
+        bind "Ctrl z" { SwitchToMode "Normal"; }
+	}
+	move {
+        bind "Ctrl y" { SwitchToMode "Normal"; }
+	}
+    shared_except "locked" {
+        bind "Ctrl g" { SwitchToMode "Locked"; }
+        bind "Ctrl q" { Quit; }
+        bind "Ctrl n" { NewPane; }
+        bind "Alt h" { MoveTab "Left"; }
+        bind "Alt l" { MoveTab "Right"; }
+        bind "Ctrl h" { MoveFocusOrTab "Left"; }
+        bind "Ctrl l" { MoveFocusOrTab "Right"; }
+        bind "Ctrl j" { MoveFocus "Down"; }
+        bind "Ctrl k" { MoveFocus "Up"; }
+        bind "Ctrl =" "Ctrl +" { Resize "Increase"; }
+        bind "Ctrl -" { Resize "Decrease"; }
+        // bind "Ctrl [" { PreviousSwapLayout; }
+        // bind "Ctrl ]" { NextSwapLayout; }
+
+        unbind "Alt n" 
+        unbind "Alt i"
+        unbind "Alt o"
+        unbind "Alt h" "Alt Left"
+        unbind "Alt l" "Alt Right"
+        unbind "Alt j" "Alt Down"
+        unbind "Alt k" "Alt Up"
+        unbind "Alt =" "Alt +"
+        unbind "Alt -"
+        // unbind "Alt ["
+        // unbind "Alt ]"
+    } 
+	shared_except "resize" "locked" {
+        bind "Ctrl z" { SwitchToMode "Resize"; }
+    }
+	shared_except "move" "locked" {
+		bind "Ctrl y" { SwitchToMode "Move"; }
+	}
+}
